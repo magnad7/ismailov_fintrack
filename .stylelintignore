@@ -1,0 +1,9 @@
+assets/scss/*.min.css
+dist/
+.output/
+.nuxt/
+node_modules/
+coverage/
+report/
+
+

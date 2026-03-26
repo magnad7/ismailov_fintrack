@@ -1,0 +1,36 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Функция проверки авторизации
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Функция проверки роли Админа
+    function isAdmin() {
+      return isAuthenticated() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    // Коллекция users: Читать могут все авторизованные (для профиля и списков), писать только админ (кроме своего профиля)
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin() || request.auth.uid == userId;
+    }
+
+    // Коллекция expense_types: Читать могут все, создавать/удалять только Админ
+    match /expense_types/{typeId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+
+    // Коллекция transactions: 
+    // Employee может читать и писать только свои транзакции
+    // Admin может читать и удалять все транзакции
+    match /transactions/{transactionId} {
+      allow read: if isAdmin() || (isAuthenticated() && resource.data.userId == request.auth.uid);
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if isAdmin() || (isAuthenticated() && resource.data.userId == request.auth.uid);
+    }
+  }
+}

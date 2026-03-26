@@ -1,0 +1,59 @@
+@use "helper";
+@use "helper/mixin" as *;
+@use "layouts";
+@use "custom";
+@use "page";
+@use "popup";
+
+* {
+  box-sizing: border-box;
+  font-family: Montserrat, sans-serif;
+}
+
+body {
+  padding: 0;
+  margin: 0;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  padding: 0;
+  margin: 0;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active,
+input:-webkit-autofill::first-line {
+  background-clip: text;
+  -webkit-text-fill-color: #4f4f4f !important;
+  transition: background-color 5000s ease-in-out 0s;
+  animation: autofill 0s forwards;
+}
+
+:-internal-autofill-previewed {
+  font-size: 16px !important;
+}
+
+@keyframes autofill {
+  100% {
+    font-size: 16px;
+  }
+}
+
+@keyframes autofill {
+  100% {
+    font-size: 16px;
+  }
+}
+
+// .el-popover {
+//     // &.el-popover {
+//     //     pointer-events: none !important;
+//     // }
+// }
