@@ -8,7 +8,7 @@ export const initFirebaseAdmin = () => {
   if (getApps().length === 0) {
     try {
       initializeApp({
-        credential: cert(serviceAccount),
+        credential: cert(serviceAccount as any),
       });
 
       console.log("Firebase Admin muvaffaqiyatli ishga tushdi!");

@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { computed } from "vue";
-
 interface ConfirmerOrder {
   approvals: ConfirmerOrderApproval[];
   author: ConfirmerOrderAuthor;

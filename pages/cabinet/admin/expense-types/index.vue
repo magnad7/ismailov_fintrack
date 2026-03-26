@@ -6,7 +6,6 @@ import {
   doc,
   serverTimestamp,
 } from "firebase/firestore";
-import { ref } from "vue";
 import { useCollection, useFirestore } from "vuefire";
 
 const db = useFirestore();

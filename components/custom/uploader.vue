@@ -1,7 +1,5 @@
 <script setup>
 import { UploadFilled } from "@element-plus/icons-vue";
-import { onUnmounted, ref } from "vue";
-
 const emit = defineEmits(["update:files"]);
 
 const props = defineProps({

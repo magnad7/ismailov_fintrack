@@ -24,6 +24,12 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // Коллекция projects: Все могут читать, создавать/удалять только Админ
+    match /projects/{projectId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+
     // Коллекция transactions: 
     // Employee может читать и писать только свои транзакции
     // Admin может читать и удалять все транзакции

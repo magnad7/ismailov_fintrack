@@ -1,11 +1,5 @@
 <script setup lang="ts">
-import {
-  addDoc,
-  collection,
-  orderBy,
-  query,
-  serverTimestamp,
-} from "firebase/firestore";
+import { collection, orderBy, query } from "firebase/firestore";
 import { useCollection, useFirestore } from "vuefire";
 
 const db = useFirestore();
