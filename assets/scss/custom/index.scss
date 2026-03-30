@@ -319,7 +319,7 @@
 
           &.active {
             color: #fff;
-            background: linear-gradient(140deg, #696969, #2a2a2a);
+            background: linear-gradient(135deg, #6366f1, #4f46e5);
           }
         }
       }
@@ -406,7 +406,7 @@
                 font-size: 20px;
                 font-weight: 500;
                 color: #fff;
-                background: #000;
+                background: #6366f1;
               }
             }
           }
@@ -442,13 +442,13 @@
                 left: -6px;
                 width: 12px;
                 height: 12px;
-                background: #ea4335;
+                background: #6366f1;
                 border-radius: 50%;
               }
 
               .time-line {
                 height: 2px;
-                background: #ea4335;
+                background: #6366f1;
               }
             }
 
@@ -456,14 +456,13 @@
             .week-event {
               position: absolute;
               z-index: 5;
-              padding: 4px 8px;
+              padding: 4px 6px;
               overflow: hidden;
+              color: #fff;
               cursor: pointer;
-              border-left: 3px solid rgb(0 0 0 / 20%);
-              border-radius: 4px;
+              border-radius: 6px;
 
               &:hover {
-                box-shadow: 0 2px 4px rgb(0 0 0 / 20%);
                 filter: brightness(0.95);
               }
 
@@ -471,16 +470,15 @@
                 margin-bottom: 2px;
                 font-size: 11px;
                 font-weight: 500;
-                color: rgb(0 0 0 / 70%);
               }
 
               .event-title {
                 overflow: hidden;
                 text-overflow: ellipsis;
-                font-size: 13px;
+                font-size: 12px;
                 font-weight: 500;
-                color: rgb(0 0 0 / 90%);
-                white-space: nowrap;
+
+                @include splice(2);
               }
             }
 
@@ -488,8 +486,8 @@
               position: absolute;
               z-index: 15;
               pointer-events: none;
-              background: rgb(26 115 232 / 30%);
-              border: 2px dashed #1a73e8;
+              background: rgb(99 102 241 / 20%);
+              border: 2px dashed #6366f1;
               border-radius: 4px;
             }
           }
@@ -575,7 +573,7 @@
 
               &.today .day-number {
                 color: #fff;
-                background: #000;
+                background: #6366f1;
               }
             }
           }
@@ -625,13 +623,13 @@
                     left: -6px;
                     width: 12px;
                     height: 12px;
-                    background: #ea4335;
+                    background: #6366f1;
                     border-radius: 50%;
                   }
 
                   .time-line {
                     height: 2px;
-                    background: #ea4335;
+                    background: #6366f1;
                   }
                 }
 
@@ -648,8 +646,8 @@
               position: absolute;
               z-index: 15;
               pointer-events: none;
-              background: rgb(26 115 232 / 30%);
-              border: 2px dashed #1a73e8;
+              background: rgb(99 102 241 / 20%);
+              border: 2px dashed #6366f1;
               border-radius: 4px;
             }
           }
@@ -711,14 +709,14 @@
                 width: 28px;
                 height: 28px;
                 color: #fff;
-                background: #000;
+                background: #6366f1;
                 border-radius: 50%;
               }
             }
 
             &.selected,
             &.in-selection {
-              background: #e8f0fe;
+              background: rgb(99 102 241 / 8%);
             }
 
             .date-number {
@@ -739,9 +737,9 @@
                 text-overflow: ellipsis;
                 font-size: 12px;
                 font-weight: 500;
-                color: rgb(0 0 0 / 90%);
+                color: #fff;
                 cursor: pointer;
-                border-radius: 3px;
+                border-radius: 6px;
 
                 @include splice(1);
 
@@ -837,7 +835,7 @@
 
                 &.today {
                   color: #fff;
-                  background: #000;
+                  background: #6366f1;
                 }
 
                 &.has-events {

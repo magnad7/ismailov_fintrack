@@ -1051,7 +1051,7 @@
 }
 .custom-calendar .calendar-header .view-selector .view-btn.active {
   color: #fff;
-  background: linear-gradient(140deg, #696969, #2a2a2a);
+  background: linear-gradient(135deg, #6366f1, #4f46e5);
 }
 .custom-calendar .calendar-body {
   display: flex;
@@ -1130,7 +1130,7 @@
   font-size: 20px;
   font-weight: 500;
   color: #fff;
-  background: #000;
+  background: #6366f1;
 }
 .custom-calendar .day-view .time-grid .day-column .time-slots {
   position: relative;
@@ -1183,7 +1183,7 @@
   left: -6px;
   width: 12px;
   height: 12px;
-  background: #ea4335;
+  background: #6366f1;
   border-radius: 50%;
 }
 .custom-calendar
@@ -1194,7 +1194,7 @@
   .current-time-indicator
   .time-line {
   height: 2px;
-  background: #ea4335;
+  background: #6366f1;
 }
 .custom-calendar .day-view .time-grid .day-column .time-slots .day-event,
 .custom-calendar .day-view .time-grid .day-column .time-slots .week-event {
@@ -1260,8 +1260,8 @@
   position: absolute;
   z-index: 15;
   pointer-events: none;
-  background: rgba(26, 115, 232, 0.3);
-  border: 2px dashed #1a73e8;
+  background: rgba(99, 102, 241, 0.2);
+  border: 2px dashed #6366f1;
   border-radius: 4px;
 }
 .custom-calendar .week-view {
@@ -1464,7 +1464,7 @@
   left: -6px;
   width: 12px;
   height: 12px;
-  background: #ea4335;
+  background: #6366f1;
   border-radius: 50%;
 }
 .custom-calendar
@@ -1477,7 +1477,7 @@
   .current-time-indicator
   .time-line {
   height: 2px;
-  background: #ea4335;
+  background: #6366f1;
 }
 .custom-calendar
   .week-view
@@ -1501,8 +1501,8 @@
   position: absolute;
   z-index: 15;
   pointer-events: none;
-  background: rgba(26, 115, 232, 0.3);
-  border: 2px dashed #1a73e8;
+  background: rgba(99, 102, 241, 0.2);
+  border: 2px dashed #6366f1;
   border-radius: 4px;
 }
 .custom-calendar .month-view {
@@ -1565,7 +1565,7 @@
   width: 28px;
   height: 28px;
   color: #fff;
-  background: #000;
+  background: #6366f1;
   border-radius: 50%;
 }
 .custom-calendar .month-view .month-grid .month-dates .month-date-cell.selected,
@@ -1574,7 +1574,7 @@
   .month-grid
   .month-dates
   .month-date-cell.in-selection {
-  background: #e8f0fe;
+  background: rgba(99, 102, 241, 0.08);
 }
 .custom-calendar
   .month-view
@@ -1609,9 +1609,9 @@
   text-overflow: ellipsis;
   font-size: 12px;
   font-weight: 500;
-  color: rgba(0, 0, 0, 0.9);
+  color: #fff;
   cursor: pointer;
-  border-radius: 3px;
+  border-radius: 6px;
   display: -webkit-box;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1752,7 +1752,7 @@
   .year-mini-dates
   .year-date.today {
   color: #fff;
-  background: #000;
+  background: #6366f1;
 }
 .custom-calendar
   .year-view

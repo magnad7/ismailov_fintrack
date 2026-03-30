@@ -9,11 +9,14 @@ interface CalendarEvent {
   date: string;
   description?: string;
   endTime: string;
+  expenseType?: string;
   id: string;
   is_all: boolean;
   is_mine: boolean | true;
+  projectName?: string;
   startTime: string;
   title: string;
+  userName?: string;
   users: number[];
 }
 
@@ -517,11 +520,14 @@ const openEventDetails = (event: CalendarEvent) => {
     date: event.date,
     description: event.description ?? "",
     endTime: event.endTime,
+    expenseType: event.expenseType,
     id: event.id,
     is_all: event.is_all,
     is_mine: event.is_mine,
+    projectName: event.projectName,
     startTime: event.startTime,
     title: event.title,
+    userName: event.userName,
     users: event.users ?? [],
   };
   openEventDialog();
@@ -542,10 +548,27 @@ const loadEvents = async () => {
       q = query(collection(db, "transactions"), where("userId", "==", userId));
     }
 
-    const snapshot = await getDocs(q);
+    // Load extra lookups concurrently
+    const [snapTx, snapUsers, snapProjects] = await Promise.all([
+      getDocs(q),
+      getDocs(collection(db, "users")),
+      getDocs(collection(db, "projects")),
+    ]);
+
+    const usersMap = new Map();
+    snapUsers.forEach((doc) => {
+      const d = doc.data();
+      usersMap.set(doc.id, d.name || d.email || "—");
+    });
+
+    const projectsMap = new Map();
+    snapProjects.forEach((doc) => {
+      projectsMap.set(doc.id, doc.data().name || "—");
+    });
+
     const loadedEvents: CalendarEvent[] = [];
 
-    snapshot.forEach((doc) => {
+    snapTx.forEach((doc) => {
       const data = doc.data();
       if (!data.createdAt) return;
       const dateObj = data.createdAt.toDate();
@@ -560,11 +583,14 @@ const loadEvents = async () => {
         date: dateStr,
         description: data.description,
         endTime: `${String(dateObj.getHours() + 1).padStart(2, "0")}:${m}`,
+        expenseType: data.expenseType || "—",
         id: doc.id,
         is_all: false,
         is_mine: true,
+        projectName: projectsMap.get(data.projectId) || "—",
         startTime: `${h}:${m}`,
-        title: `${isIncome ? "+" : "-"}${data.amount} ${data.expenseType || ""}`,
+        title: `${isIncome ? "+" : "-"}${data.amount}`,
+        userName: usersMap.get(data.userId) || "—",
         users: [],
       });
     });

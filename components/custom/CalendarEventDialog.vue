@@ -1,401 +1,525 @@
 <script setup lang="ts">
-import type { FormInstance } from "element-plus";
-
-import { Check, Close } from "@element-plus/icons-vue";
-
-const { t } = useI18n();
-const loading = ref(false);
 const isVisible = defineModel<boolean>("isVisible", { default: false });
 const eventForm = defineModel<any>("eventForm", { required: true });
-const userList = ref<{ fullname: string; id: number }[]>([]);
-const eventFormRef = ref<FormInstance>();
-const eventFormRules = reactive({
-  color: [{ message: t("required"), required: true, trigger: "blur" }],
-  date: [{ message: t("required"), required: true, trigger: "blur" }],
-  endTime: [{ message: t("required"), required: true, trigger: "blur" }],
-  startTime: [{ message: t("required"), required: true, trigger: "blur" }],
-  title: [{ message: t("required"), required: true, trigger: "blur" }],
-});
+
 const { isEditing } = defineProps<{
   eventColors: { name: string; value: string }[];
   isEditing: boolean;
+  isSaving?: boolean;
 }>();
 
 const emit = defineEmits(["save", "delete"]);
-// defineEmits(["save", "delete"]);
 
-const titleInput = ref<HTMLInputElement>();
-
-watch(isVisible, (newVal) => {
-  if (newVal) {
-    nextTick(() => {
-      titleInput.value?.focus();
-    });
-  }
+const isIncome = computed(() => {
+  const title = eventForm.value?.title || "";
+  return title.startsWith("+");
 });
 
-const submitForm = async (formEl: any) => {
-  if (!formEl) return;
-  await formEl.validate();
-  loading.value = true;
+const amountDisplay = computed(() => {
+  const title = eventForm.value?.title || "";
+  return title;
+});
 
-  if (isEditing) {
-    // const { status } = await PUT(
-    //   `admin/department/${eventForm.value.id}`,
-    //   eventForm.value
-    // );
-    // if (status) {
-    messageMeneger("Отдел обновлен");
-    loading.value = false;
-    emit("save", eventForm.value);
-    // }
-  } else {
-    // const { status } = await POST(`admin/department`, eventForm.value);
-    // if (status) {
-    messageMeneger("Отдел создан");
-    loading.value = false;
-    emit("save", eventForm.value);
-    // }
-  }
-  loading.value = false;
+const close = () => {
   isVisible.value = false;
 };
-
-onMounted(async () => {
-  const { data } = await GET<{ fullname: string; id: number }[]>(
-    `requirements/users-for-calendar`
-  );
-  userList.value = data;
-});
 </script>
 
 <template>
   <el-dialog
     v-model="isVisible"
-    width="600"
+    width="480"
     align-center
-    @close="isVisible = false">
-    <h2 class="mb-20">Новый событие</h2>
+    :show-close="false"
+    class="tx-dialog"
+    @close="close">
+    <template #header>
+      <div class="tx-dialog-head">
+        <div
+          class="tx-dialog-head__badge"
+          :class="isIncome ? 'income' : 'expense'">
+          <svg
+            v-if="isIncome"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round">
+            <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+            <polyline points="17 6 23 6 23 12" />
+          </svg>
+          <svg
+            v-else
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round">
+            <polyline points="23 18 13.5 8.5 8.5 13.5 1 6" />
+            <polyline points="17 18 23 18 23 12" />
+          </svg>
+        </div>
+        <div class="tx-dialog-head__info">
+          <span class="tx-dialog-head__type">
+            {{ isIncome ? "Daromad" : "Xarajat" }}
+          </span>
+          <h3
+            class="tx-dialog-head__amount"
+            :class="isIncome ? 'income' : 'expense'">
+            {{ amountDisplay }}
+          </h3>
+        </div>
+        <button
+          class="tx-dialog-head__close"
+          @click="close">
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round">
+            <line
+              x1="18"
+              y1="6"
+              x2="6"
+              y2="18" />
+            <line
+              x1="6"
+              y1="6"
+              x2="18"
+              y2="18" />
+          </svg>
+        </button>
+      </div>
+    </template>
 
-    <el-form
-      ref="eventFormRef"
-      :model="eventForm"
-      :rules="eventFormRules"
-      label-position="top"
-      @keyup.enter="submitForm(eventFormRef)">
-      <el-row
-        class="gap-20"
-        :gutter="20">
-        <el-col :span="24">
-          <el-form-item
-            prop="title"
-            label="Введите название">
-            <el-input
-              v-model="eventForm.title"
-              :disabled="!eventForm.is_mine" />
-          </el-form-item>
-        </el-col>
-        <el-col :span="24">
-          <el-form-item
-            label="Для всех ?"
-            prop="is_all">
-            <el-switch
-              v-model="eventForm.is_all"
-              :active-icon="Check"
-              :disabled="!eventForm.is_mine"
-              :inactive-icon="Close"
-              inline-prompt
-              @change="eventForm.users = []" />
-          </el-form-item>
-        </el-col>
-        <el-col
-          v-if="!eventForm.is_all"
-          :span="24">
-          <el-form-item
-            prop="users"
-            filterable
-            remote
-            class="h-auto"
-            label="Выберите участников">
-            <el-select
-              v-model="eventForm.users"
-              class="h-auto"
-              multiple
-              :disabled="!eventForm.is_mine"
-              placeholder="Выберите участников">
-              <el-option
-                v-for="(item, index) in userList"
-                :key="index"
-                :label="item.fullname"
-                :value="item.id" />
-            </el-select>
-          </el-form-item>
-        </el-col>
-        <el-col :span="12">
-          <el-form-item
-            prop="startTime"
-            label="Введите время начала">
-            <el-time-picker
-              v-model="eventForm.startTime"
-              :disabled="!eventForm.is_mine"
-              format="HH:mm"
-              value-format="HH:mm" />
-          </el-form-item>
-        </el-col>
-        <el-col :span="12">
-          <el-form-item
-            prop="endTime"
-            label="Введите время окончания">
-            <el-time-picker
-              v-model="eventForm.endTime"
-              :disabled="!eventForm.is_mine"
-              format="HH:mm"
-              value-format="HH:mm" />
-          </el-form-item>
-        </el-col>
-        <el-col :span="24">
-          <el-form-item
-            prop="description"
-            label="Введите описание">
-            <el-input
-              v-model="eventForm.description"
-              :disabled="!eventForm.is_mine"
-              type="textarea" />
-          </el-form-item>
-        </el-col>
-        <el-col :span="24">
-          <el-form-item
-            label="🎨"
-            style="display: flex; align-items: center; margin-bottom: 20px">
-            <div class="color-picker ml-8">
-              <el-tooltip
-                v-for="color in eventColors"
-                :key="color.value"
-                :disabled="!eventForm.is_mine"
-                :content="color.name"
-                placement="top">
-                <div
-                  :class="[
-                    'color-option',
-                    { selected: eventForm.color === color.value },
-                  ]"
-                  :style="{ backgroundColor: color.value }"
-                  @click="eventForm.color = color.value">
-                  <el-icon
-                    v-if="eventForm.color === color.value"
-                    :disabled="!eventForm.is_mine"
-                    class="check-icon">
-                    <Check />
-                  </el-icon>
-                </div>
-              </el-tooltip>
-            </div>
-          </el-form-item>
-        </el-col>
-      </el-row>
-    </el-form>
-    <div class="dialog-footer">
-      <button
-        v-if="isEditing && eventForm.is_mine"
-        class="delete-btn"
-        @click="$emit('delete')">
-        Удалить
-      </button>
-      <div class="spacer"></div>
-      <button
-        class="cancel-btn"
-        @click="isVisible = false">
-        Отмена
-      </button>
-      <button
-        v-if="eventForm.is_mine"
-        class="save-btn"
-        @click="submitForm(eventFormRef)">
-        Сохранить
-      </button>
+    <div class="tx-dialog-body">
+      <!-- Date & Time -->
+      <div class="tx-detail">
+        <div class="tx-detail__icon">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round">
+            <rect
+              x="3"
+              y="4"
+              width="18"
+              height="18"
+              rx="2" />
+            <line
+              x1="16"
+              y1="2"
+              x2="16"
+              y2="6" />
+            <line
+              x1="8"
+              y1="2"
+              x2="8"
+              y2="6" />
+            <line
+              x1="3"
+              y1="10"
+              x2="21"
+              y2="10" />
+          </svg>
+        </div>
+        <div class="tx-detail__content">
+          <span class="tx-detail__label">Sana</span>
+          <span class="tx-detail__value">{{ eventForm.date }}</span>
+        </div>
+      </div>
+
+      <div class="tx-detail">
+        <div class="tx-detail__icon">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round">
+            <circle
+              cx="12"
+              cy="12"
+              r="10" />
+            <polyline points="12 6 12 12 16 14" />
+          </svg>
+        </div>
+        <div class="tx-detail__content">
+          <span class="tx-detail__label">Vaqt</span>
+          <span class="tx-detail__value">
+            {{ eventForm.startTime }} – {{ eventForm.endTime }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Description -->
+      <div
+        v-if="eventForm.description"
+        class="tx-detail">
+        <div class="tx-detail__icon">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round">
+            <line
+              x1="17"
+              y1="10"
+              x2="3"
+              y2="10" />
+            <line
+              x1="21"
+              y1="6"
+              x2="3"
+              y2="6" />
+            <line
+              x1="21"
+              y1="14"
+              x2="3"
+              y2="14" />
+            <line
+              x1="17"
+              y1="18"
+              x2="3"
+              y2="18" />
+          </svg>
+        </div>
+        <div class="tx-detail__content">
+          <span class="tx-detail__label">Izoh</span>
+          <span class="tx-detail__value">{{ eventForm.description }}</span>
+        </div>
+      </div>
+
+      <!-- User Info -->
+      <div
+        v-if="eventForm.userName && eventForm.userName !== '—'"
+        class="tx-detail">
+        <div class="tx-detail__icon">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+            <circle
+              cx="12"
+              cy="7"
+              r="4" />
+          </svg>
+        </div>
+        <div class="tx-detail__content">
+          <span class="tx-detail__label">Xodim</span>
+          <span class="tx-detail__value">{{ eventForm.userName }}</span>
+        </div>
+      </div>
+
+      <!-- Project Info -->
+      <div
+        v-if="eventForm.projectName && eventForm.projectName !== '—'"
+        class="tx-detail">
+        <div class="tx-detail__icon">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round">
+            <path
+              d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
+          </svg>
+        </div>
+        <div class="tx-detail__content">
+          <span class="tx-detail__label">Loyiha</span>
+          <span class="tx-detail__value">{{ eventForm.projectName }}</span>
+        </div>
+      </div>
+
+      <!-- Expense Type Info -->
+      <div
+        v-if="eventForm.expenseType && eventForm.expenseType !== '—'"
+        class="tx-detail">
+        <div class="tx-detail__icon">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round">
+            <line
+              x1="12"
+              y1="1"
+              x2="12"
+              y2="23" />
+            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+          </svg>
+        </div>
+        <div class="tx-detail__content">
+          <span class="tx-detail__label">Xarajat turi</span>
+          <span class="tx-detail__value">{{ eventForm.expenseType }}</span>
+        </div>
+      </div>
+
+      <!-- Color indicator -->
+      <div class="tx-detail">
+        <div class="tx-detail__icon">
+          <div
+            class="tx-color-dot"
+            :style="{ background: eventForm.color }"></div>
+        </div>
+        <div class="tx-detail__content">
+          <span class="tx-detail__label">Tur</span>
+          <span class="tx-detail__value">
+            <span
+              class="tx-type-chip"
+              :class="isIncome ? 'income' : 'expense'">
+              {{ isIncome ? "Daromad" : "Xarajat" }}
+            </span>
+          </span>
+        </div>
+      </div>
     </div>
+
+    <template #footer>
+      <div class="tx-dialog-footer">
+        <button
+          class="tx-btn tx-btn--ghost"
+          @click="close">
+          Yopish
+        </button>
+      </div>
+    </template>
   </el-dialog>
 </template>
 
-<style scoped>
-.dialog-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 1000;
+<style lang="scss" scoped>
+.tx-dialog-head {
   display: flex;
+  gap: 14px;
   align-items: center;
-  justify-content: center;
-  background: rgb(0 0 0 / 50%);
+  padding: 4px 0;
+
+  &__badge {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+
+    &.income {
+      color: #10b981;
+      background: #ecfdf5;
+    }
+
+    &.expense {
+      color: #ef4444;
+      background: #fef2f2;
+    }
+  }
+
+  &__info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__type {
+    font-size: 12px;
+    font-weight: 500;
+    color: #9ca3af;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  &__amount {
+    margin: 2px 0 0;
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.2;
+
+    &.income {
+      color: #10b981;
+    }
+
+    &.expense {
+      color: #ef4444;
+    }
+  }
+
+  &__close {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    color: #9ca3af;
+    cursor: pointer;
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    transition: all 0.15s;
+
+    &:hover {
+      color: #374151;
+      background: #f3f4f6;
+    }
+  }
 }
 
-.event-dialog {
-  width: 448px;
-  background: white;
-  border-radius: 8px;
+.tx-dialog-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.tx-detail {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  padding: 12px 0;
+  border-bottom: 1px solid #f5f5f5;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &__icon {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    color: #9ca3af;
+    background: #f9fafb;
+    border-radius: 8px;
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  &__label {
+    font-size: 11.5px;
+    font-weight: 500;
+    color: #9ca3af;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  &__value {
+    font-size: 14.5px;
+    font-weight: 600;
+    color: #1f2937;
+  }
+}
+
+.tx-color-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
   box-shadow:
-    0 24px 38px 3px rgb(0 0 0 / 14%),
-    0 9px 46px 8px rgb(0 0 0 / 12%),
-    0 11px 15px -7px rgb(0 0 0 / 20%);
+    0 0 0 2px #fff,
+    0 0 0 3px rgb(0 0 0 / 8%);
 }
 
-.dialog-header {
+.tx-type-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 20px;
+
+  &.income {
+    color: #059669;
+    background: #ecfdf5;
+  }
+
+  &.expense {
+    color: #dc2626;
+    background: #fef2f2;
+  }
+}
+
+.tx-dialog-footer {
   display: flex;
   gap: 8px;
-  align-items: center;
-  padding: 8px 8px 8px 16px;
+  justify-content: flex-end;
 }
 
-.event-title-input {
-  flex: 1;
-  padding: 8px 0;
-  font-size: 22px;
-  outline: none;
-  border: none;
-  border-bottom: 2px solid transparent;
-  transition: border-color 0.2s;
-}
-
-.event-title-input:focus {
-  border-bottom-color: #1a73e8;
-}
-
-.close-btn {
-  padding: 8px;
-  color: #5f6368;
-  cursor: pointer;
-  background: none;
-  border: none;
-  border-radius: 50%;
-}
-
-.close-btn:hover {
-  background: #f1f3f4;
-}
-
-.dialog-body {
-  padding: 16px;
-}
-
-.check-icon {
-  font-size: 16px;
-  font-weight: bold;
-  color: white;
-  filter: drop-shadow(0 1px 2px rgb(0 0 0 / 30%));
-}
-
-.form-row {
-  display: flex;
-  gap: 16px;
-  margin-bottom: 16px;
-}
-
-.form-icon {
-  width: 24px;
-  font-size: 20px;
-}
-
-.form-content {
-  flex: 1;
-}
-
-.date-time-row {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-}
-
-.date-input,
-.time-input {
-  padding: 6px 8px;
+.tx-btn {
+  padding: 8px 20px;
+  font-family: Montserrat, sans-serif;
   font-size: 14px;
-  border: 1px solid #dadce0;
-  border-radius: 4px;
-}
-
-.description-input {
-  width: 100%;
-  padding: 8px;
-  font-family: inherit;
-  resize: vertical;
-  border: 1px solid #dadce0;
-  border-radius: 4px;
-}
-
-.color-picker {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.color-option {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
+  font-weight: 600;
   cursor: pointer;
-  border: 2px solid transparent;
-  border-radius: 50%;
-  transition: transform 0.1s;
-}
-
-.color-option:hover {
-  transform: scale(1.1);
-}
-
-.color-option.selected {
-  border-color: #5f6368;
-}
-
-.dialog-footer {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  padding: 8px 16px;
-  border-top: 1px solid #dadce0;
-}
-
-.spacer {
-  flex: 1;
-}
-
-.save-btn {
-  padding: 8px 24px;
-  font-weight: 500;
-  color: white;
-  cursor: pointer;
-  background: #1a73e8;
   border: none;
-  border-radius: 4px;
+  border-radius: 10px;
+  transition: all 0.15s;
+
+  &--ghost {
+    color: #6b7280;
+    background: #f3f4f6;
+
+    &:hover {
+      color: #374151;
+      background: #e5e7eb;
+    }
+  }
 }
 
-.save-btn:hover {
-  background: #1765cc;
+// Override el-dialog styles
+:deep(.el-dialog) {
+  overflow: hidden;
+  border-radius: 18px !important;
 }
 
-.cancel-btn {
-  padding: 8px 16px;
-  color: #5f6368;
-  cursor: pointer;
-  background: none;
-  border: none;
-  border-radius: 4px;
+:deep(.el-dialog__header) {
+  padding: 20px 24px 12px !important;
+  margin-right: 0 !important;
 }
 
-.cancel-btn:hover {
-  background: #f8f9fa;
+:deep(.el-dialog__body) {
+  padding: 0 24px !important;
 }
 
-.delete-btn {
-  padding: 8px 16px;
-  color: #d93025;
-  cursor: pointer;
-  background: none;
-  border: none;
-  border-radius: 4px;
-}
-
-.delete-btn:hover {
-  background: #fce8e6;
+:deep(.el-dialog__footer) {
+  padding: 12px 24px 20px !important;
 }
 </style>
