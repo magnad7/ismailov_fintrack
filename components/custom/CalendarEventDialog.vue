@@ -2,14 +2,6 @@
 const isVisible = defineModel<boolean>("isVisible", { default: false });
 const eventForm = defineModel<any>("eventForm", { required: true });
 
-const { isEditing } = defineProps<{
-  eventColors: { name: string; value: string }[];
-  isEditing: boolean;
-  isSaving?: boolean;
-}>();
-
-const emit = defineEmits(["save", "delete"]);
-
 const isIncome = computed(() => {
   const title = eventForm.value?.title || "";
   return title.startsWith("+");
@@ -67,7 +59,7 @@ const close = () => {
         </div>
         <div class="tx-dialog-head__info">
           <span class="tx-dialog-head__type">
-            {{ isIncome ? "Daromad" : "Xarajat" }}
+            {{ isIncome ? "Income" : "Expense" }}
           </span>
           <h3
             class="tx-dialog-head__amount"
@@ -139,7 +131,7 @@ const close = () => {
           </svg>
         </div>
         <div class="tx-detail__content">
-          <span class="tx-detail__label">Sana</span>
+          <span class="tx-detail__label">Date</span>
           <span class="tx-detail__value">{{ eventForm.date }}</span>
         </div>
       </div>
@@ -163,7 +155,7 @@ const close = () => {
           </svg>
         </div>
         <div class="tx-detail__content">
-          <span class="tx-detail__label">Vaqt</span>
+          <span class="tx-detail__label">Time</span>
           <span class="tx-detail__value">
             {{ eventForm.startTime }} – {{ eventForm.endTime }}
           </span>
@@ -207,7 +199,7 @@ const close = () => {
           </svg>
         </div>
         <div class="tx-detail__content">
-          <span class="tx-detail__label">Izoh</span>
+          <span class="tx-detail__label">Description</span>
           <span class="tx-detail__value">{{ eventForm.description }}</span>
         </div>
       </div>
@@ -234,7 +226,7 @@ const close = () => {
           </svg>
         </div>
         <div class="tx-detail__content">
-          <span class="tx-detail__label">Xodim</span>
+          <span class="tx-detail__label">Employee</span>
           <span class="tx-detail__value">{{ eventForm.userName }}</span>
         </div>
       </div>
@@ -258,7 +250,7 @@ const close = () => {
           </svg>
         </div>
         <div class="tx-detail__content">
-          <span class="tx-detail__label">Loyiha</span>
+          <span class="tx-detail__label">Project</span>
           <span class="tx-detail__value">{{ eventForm.projectName }}</span>
         </div>
       </div>
@@ -286,7 +278,7 @@ const close = () => {
           </svg>
         </div>
         <div class="tx-detail__content">
-          <span class="tx-detail__label">Xarajat turi</span>
+          <span class="tx-detail__label">Expense Type</span>
           <span class="tx-detail__value">{{ eventForm.expenseType }}</span>
         </div>
       </div>
@@ -299,12 +291,12 @@ const close = () => {
             :style="{ background: eventForm.color }"></div>
         </div>
         <div class="tx-detail__content">
-          <span class="tx-detail__label">Tur</span>
+          <span class="tx-detail__label">Type</span>
           <span class="tx-detail__value">
             <span
               class="tx-type-chip"
               :class="isIncome ? 'income' : 'expense'">
-              {{ isIncome ? "Daromad" : "Xarajat" }}
+              {{ isIncome ? "Income" : "Expense" }}
             </span>
           </span>
         </div>
@@ -316,7 +308,7 @@ const close = () => {
         <button
           class="tx-btn tx-btn--ghost"
           @click="close">
-          Yopish
+          Close
         </button>
       </div>
     </template>

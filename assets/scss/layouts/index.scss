@@ -28,189 +28,133 @@
     }
   }
 
-  .layout {
-    &-header {
-      height: 0;
+  /* ──── Sidebar Profile ──── */
+  .sidebar-profile {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    padding: 24px 20px 20px;
+    border-bottom: 1px solid #f0f1f3;
+    transition: all 0.3s;
 
-      &-logo {
-        height: 48px;
-
-        img {
-          height: 100%;
-          transition: all 0.3s;
-        }
-      }
-
-      // &-profile {
-      //     margin-left: auto;
-      //     display: flex;
-      //     align-items: center;
-      //     width: max-content;
-      //     gap: 14px;
-
-      //     &-image {
-      //         width: 50px;
-      //         height: 50px;
-      //         border-radius: 50%;
-      //         display: flex;
-      //         align-items: center;
-      //         justify-content: center;
-      //         overflow: hidden;
-      //         background: rgb(238, 240, 242);
-      //         transition: all 0.3s;
-
-      //         img {
-      //             width: 100%;
-      //             height: 100%;
-      //             object-fit: cover;
-      //         }
-      //     }
-
-      //     &-info {
-      //         h3 {
-      //             color: rgb(29, 29, 29);
-      //             font-size: 18px;
-      //             font-weight: 600;
-      //             line-height: 30px;
-      //             text-transform: capitalize;
-      //         }
-
-      //         h4 {
-      //             color: rgb(125, 125, 125);
-      //             font-size: 16px;
-      //             font-weight: 400;
-      //             line-height: 30px;
-      //         }
-      //     }
-      // }
-
-      // &-exit {
-
-      //     border-left: 1px solid var(--el-menu-border-color);
-      //     margin-left: 20px;
-      //     height: 100%;
-      //     display: flex;
-      //     align-items: center;
-      //     cursor: pointer;
-      //     transition: all 0.3s;
-
-      //     .el-button {
-      //         display: flex;
-      //         align-items: center;
-      //         justify-content: center;
-      //         gap: 8px;
-      //         height: 100%;
-      //         width: 100%;
-      //         padding: 0 40px 0 30px;
-      //         border: none;
-      //         outline: none;
-
-      //         &:hover {
-      //             background-color: transparent !important;
-      //         }
-
-      //         span {
-      //             color: rgb(29, 29, 29);
-      //             font-size: 18px;
-      //             font-weight: 600;
-      //             line-height: 30px;
-      //         }
-      //     }
-      // }
-    }
-
-    &-profile {
+    &__avatar {
       display: flex;
-      gap: 10px;
+      flex-shrink: 0;
       align-items: center;
-      padding: 16px;
-      border-bottom: 1px solid var(--el-menu-border-color);
+      justify-content: center;
+      width: 42px;
+      height: 42px;
+      font-size: 16px;
+      font-weight: 700;
+      color: #fff;
+      background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+      border-radius: 12px;
+      box-shadow: 0 3px 10px rgb(99 102 241 / 30%);
+      transition: transform 0.2s ease;
 
-      &-icon {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        min-width: 36px;
-        max-width: 36px;
-        height: 36px;
-        background-color: #000;
-        border-radius: 50%;
-
-        svg {
-          width: 20px;
-          height: 20px;
-          stroke: #fff;
-        }
-      }
-
-      &-info {
-        span {
-          overflow-wrap: unset;
-          transition: all 0.3s;
-        }
+      &:hover {
+        transform: scale(1.05);
       }
     }
 
-    &-menu {
-      --el-menu-item-font-size: 16px;
-      --el-menu-item-height: auto;
-
-      width: 100% !important;
-      max-width: 300px;
+    &__info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+      overflow: hidden;
       transition: all 0.3s;
+    }
 
-      &-collapse {
-        position: absolute;
-        right: 0;
-        display: block;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 36px;
-        height: 36px;
-        cursor: pointer;
-        background-color: #fff;
-        border: 1px solid var(--el-menu-border-color);
+    &__name {
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.3;
+      color: #111827;
+      white-space: nowrap;
+    }
 
-        // z-index: 1;
-        border-radius: 50%;
-        transform: translate(50%, 100%);
-        transition: all 0.3s;
-
-        &.open {
-          transform: translate(50%, 50%) rotate(180deg);
-        }
-      }
+    &__role {
+      display: block;
+      font-size: 12px;
+      font-weight: 500;
+      line-height: 1.3;
+      color: #9ca3af;
     }
   }
 
-  &-footer {
-    border-top: 1px solid var(--el-menu-border-color);
+  /* ──── Sidebar Menu ──── */
+  .layout-menu {
+    --el-menu-item-font-size: 14px;
+    --el-menu-item-height: auto;
+
+    width: 100% !important;
+    max-width: 300px;
+    transition: all 0.3s;
   }
-}
 
-.mini-menu {
-  .layout {
-    &-header {
-      height: 60px;
+  /* ──── Sidebar Collapse Button ──── */
+  .sidebar-collapse-btn {
+    position: absolute;
+    right: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    color: #6b7280;
+    cursor: pointer;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 50%;
+    box-shadow: 0 1px 4px rgb(0 0 0 / 6%);
+    transform: translate(50%, 120%);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
-      &-logo {
-        height: 40px;
-      }
+    &:hover {
+      color: #6366f1;
+      border-color: #c7d2fe;
+      box-shadow: 0 2px 8px rgb(99 102 241 / 15%);
+    }
 
-      &-profile {
-        &-image {
-          width: 40px;
+    &.collapsed {
+      transform: translate(50%, 120%) rotate(180deg);
+    }
+  }
+
+  /* ──── Sidebar Footer ──── */
+  .sidebar-footer {
+    padding: 12px;
+    border-top: 1px solid #f0f1f3;
+  }
+
+  .mini-menu {
+    .layout {
+      &-header {
+        height: 60px;
+
+        &-logo {
           height: 40px;
         }
 
-        &-info h4 {
-          display: none;
-        }
-      }
+        &-profile {
+          &-image {
+            width: 40px;
+            height: 40px;
+          }
 
-      &-exit {
-        height: 59px;
+          &-info h4 {
+            display: none;
+          }
+        }
+
+        &-exit {
+          height: 59px;
+        }
       }
     }
   }

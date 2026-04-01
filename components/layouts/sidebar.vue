@@ -1,68 +1,56 @@
 <script setup>
 import { ArrowRightBold } from "@element-plus/icons-vue";
+
 const variableStore = useVariebleStore();
 const authStore = useAuthStore();
 const cookieStore = useCookiesStore();
 const router = useRouter();
 const route = useRoute();
+
 const activeMenu = computed(() => {
   return (path) => route.path.startsWith(path);
 });
 
-const isActiveMainMenu = ref(true);
-
-const handleClickMenu = (path, type) => {
-  if (type === "main") {
-    isActiveMainMenu.value = true;
-  } else {
-    isActiveMainMenu.value = false;
-  }
+const handleClickMenu = (path) => {
   router.push(path);
 };
 
 const userLogOut = () => {
   authStore.logOut();
 };
+
+const getInitial = (name) => {
+  return name?.charAt(0)?.toUpperCase() || "?";
+};
 </script>
 
 <template>
-  <el-icon
-    class="layout-menu-collapse"
+  <!-- Collapse Toggle -->
+  <button
+    class="sidebar-collapse-btn"
+    :class="{ collapsed: cookieStore.isOpenMenu }"
     @click="cookieStore.isOpenMenu = !cookieStore.isOpenMenu">
-    <ArrowRightBold />
-  </el-icon>
+    <el-icon :size="14">
+      <ArrowRightBold />
+    </el-icon>
+  </button>
 
-  <!-- <div class="layout-header"></div> -->
-  <div class="layout-profile">
-    <div class="layout-profile-icon">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        class="lucide lucide-user w-4 h-4 text-primary-foreground"
-        aria-hidden="true">
-        <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
-        <circle
-          cx="12"
-          cy="7"
-          r="4"></circle>
-      </svg>
+  <!-- Profile Section -->
+  <div class="sidebar-profile">
+    <div class="sidebar-profile__avatar">
+      {{ getInitial(authStore.userObj?.name) }}
     </div>
-    <div class="layout-profile-info">
-      <span>
-        <b>{{ authStore.user?.name }}</b>
+    <div class="sidebar-profile__info">
+      <span class="sidebar-profile__name">
+        {{ authStore.userObj?.name || "User" }}
       </span>
-      <br />
-      <span>{{ variableStore.roles[authStore.user?.role] }}</span>
+      <span class="sidebar-profile__role">
+        {{ variableStore.roles[authStore.userObj?.role] || "User" }}
+      </span>
     </div>
   </div>
 
+  <!-- Navigation Menu -->
   <el-scrollbar height="100%">
     <el-menu
       class="layout-menu"
@@ -71,8 +59,8 @@ const userLogOut = () => {
         v-for="item in variableStore.list[authStore.role]"
         :key="item.path"
         :index="item.path"
-        :class="{ isActive: activeMenu(item.path) }"
-        @click="handleClickMenu(item.path, 'main')">
+        :class="{ 'is-active-item': activeMenu(item.path) }"
+        @click="handleClickMenu(item.path)">
         <el-icon style="margin-right: 12px !important">
           <Svg :name="item.icon" />
         </el-icon>
@@ -80,26 +68,31 @@ const userLogOut = () => {
       </el-menu-item>
     </el-menu>
   </el-scrollbar>
-  <div class="layout-footer">
+
+  <!-- Footer -->
+  <div class="sidebar-footer">
     <el-menu
       class="layout-menu"
       :collapse="cookieStore.isOpenMenu">
       <el-menu-item
-        :class="{ isActive: activeMenu(`/cabinet/${authStore.role}/profile`) }"
+        :class="{
+          'is-active-item': activeMenu(`/cabinet/${authStore.role}/profile`),
+        }"
         :index="`/cabinet/${authStore.role}/profile`"
         @click="handleClickMenu(`/cabinet/${authStore.role}/profile`)">
         <el-icon style="margin-right: 12px !important">
           <Svg name="user" />
         </el-icon>
-        <template #title>Профиль</template>
+        <template #title>Profile</template>
       </el-menu-item>
       <el-menu-item
+        class="logout-item"
         :index="`/cabinet/${authStore.role}/logout`"
         @click="userLogOut">
         <el-icon style="margin-right: 12px !important">
           <Svg name="exit" />
         </el-icon>
-        <template #title>Выйти</template>
+        <template #title>Log Out</template>
       </el-menu-item>
     </el-menu>
   </div>

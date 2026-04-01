@@ -8,7 +8,6 @@ import {
   query,
   serverTimestamp,
   setDoc,
-  where,
 } from "firebase/firestore";
 import { useCollection, useCurrentUser, useFirestore } from "vuefire";
 
@@ -83,7 +82,7 @@ const sendMessage = async () => {
   if (!text || !currentUser.value || !adminUser.value || !chatId.value) return;
   messageInput.value = "";
 
-  const senderName = myProfile.value?.name || "Xodim";
+  const senderName = myProfile.value?.name || "Employee";
 
   try {
     await setDoc(
@@ -106,7 +105,7 @@ const sendMessage = async () => {
 
     scrollToBottom();
   } catch (err) {
-    console.error("Xabar yuborishda xatolik:", err);
+    console.error("Error sending message:", err);
   }
 };
 
@@ -130,11 +129,11 @@ const getDateLabel = (ts: any) => {
   if (!ts) return "";
   const d = ts.toDate ? ts.toDate() : new Date(ts);
   const now = new Date();
-  if (d.toDateString() === now.toDateString()) return "Bugun";
+  if (d.toDateString() === now.toDateString()) return "Today";
   const y = new Date(now);
   y.setDate(y.getDate() - 1);
-  if (d.toDateString() === y.toDateString()) return "Kecha";
-  return d.toLocaleDateString("uz-UZ", { day: "numeric", month: "long" });
+  if (d.toDateString() === y.toDateString()) return "Yesterday";
+  return d.toLocaleDateString("en-US", { day: "numeric", month: "long" });
 };
 
 const showDateSep = (i: number) => {
@@ -164,7 +163,7 @@ onUnmounted(() => {
         </div>
         <div class="chat-head__info">
           <h3 class="chat-head__name">{{ adminUser?.name || "Admin" }}</h3>
-          <span class="chat-head__sub">Admin bilan bog'lanish</span>
+          <span class="chat-head__sub">Contact Admin</span>
         </div>
       </div>
 
@@ -206,7 +205,7 @@ onUnmounted(() => {
                 d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
             </svg>
           </div>
-          <p>Admin bilan suhbatni boshlang!</p>
+          <p>Start a conversation with Admin!</p>
         </div>
       </div>
 
@@ -215,7 +214,7 @@ onUnmounted(() => {
         <input
           v-model="messageInput"
           class="chat-footer__input"
-          placeholder="Xabar yozing..."
+          placeholder="Type a message..."
           @keyup.enter="sendMessage" />
         <button
           class="chat-footer__send"
@@ -390,14 +389,14 @@ onUnmounted(() => {
     max-width: 65%;
     padding: 10px 14px 6px;
     border-radius: 18px;
-    animation: msgIn 0.2s ease;
+    animation: msg-in 0.2s ease;
   }
 
   &__text {
     margin: 0;
     font-size: 14px;
     line-height: 1.5;
-    word-break: break-word;
+    overflow-wrap: break-word;
     white-space: pre-wrap;
   }
 
@@ -409,7 +408,7 @@ onUnmounted(() => {
   }
 }
 
-@keyframes msgIn {
+@keyframes msg-in {
   from {
     opacity: 0;
     transform: translateY(6px);

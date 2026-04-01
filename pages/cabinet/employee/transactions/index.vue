@@ -5,9 +5,9 @@ import { ElMessage } from "element-plus";
 import {
   addDoc,
   collection,
-  orderBy,
   query,
   Timestamp,
+  where,
 } from "firebase/firestore";
 import { useCollection, useFirestore } from "vuefire";
 
@@ -16,10 +16,19 @@ import { useAuthStore } from "~/store/auth";
 const db = useFirestore();
 const authStore = useAuthStore();
 const transactionsRef = collection(db, "transactions");
-const q = query(transactionsRef, orderBy("createdAt", "desc"));
-const { data: transactions, pending } = useCollection(q);
+const q = computed(() =>
+  query(transactionsRef, where("userId", "==", authStore.myId))
+);
+const { data: rawTransactions, pending } = useCollection(q);
 
-const { data: employees } = useCollection(collection(db, "users"));
+const transactions = computed(() => {
+  return rawTransactions.value.slice().sort((a: any, b: any) => {
+    const da = a.createdAt?.toDate?.() ?? new Date(0);
+    const db2 = b.createdAt?.toDate?.() ?? new Date(0);
+    return db2.getTime() - da.getTime();
+  });
+});
+
 const { data: projects } = useCollection(collection(db, "projects"));
 const { data: expenseTypes } = useCollection(collection(db, "expense_types"));
 
@@ -27,6 +36,8 @@ const getProjectName = (pid: string) => {
   if (!pid || !projects.value) return "—";
   return projects.value.find((p: any) => p.id === pid)?.name || "—";
 };
+
+const { data: employees } = useCollection(collection(db, "users"));
 
 const getUserName = (uid: string) => {
   if (!uid || !employees.value) return "—";
@@ -60,9 +71,6 @@ const form = reactive({
 const rules = reactive<FormRules>({
   amount: [{ message: "Amount is required", required: true, trigger: "blur" }],
   type: [{ message: "Type is required", required: true, trigger: "change" }],
-  userId: [
-    { message: "Employee is required", required: true, trigger: "change" },
-  ],
 });
 
 const openAddModal = () => {
@@ -87,13 +95,13 @@ const submitForm = async (formEl: FormInstance | undefined) => {
         await addDoc(collection(db, "transactions"), {
           amount: Number(form.amount),
           authorId: authStore.myId,
-          authorRole: "admin",
+          authorRole: "employee",
           createdAt: Timestamp.now(),
           description: form.description || "",
           expenseType: form.expenseType || "Other",
           projectId: form.projectId || null,
           type: form.type,
-          userId: form.userId || authStore.myId,
+          userId: authStore.myId,
         });
         ElMessage.success("Transaction successfully created!");
         showAddModal.value = false;
@@ -206,7 +214,7 @@ const submitForm = async (formEl: FormInstance | undefined) => {
 
         <el-table-column
           label="Category"
-          width="150">
+          width="170">
           <template #default="scope">
             <span class="cell-category">
               {{ scope.row.expenseType || "—" }}
@@ -234,7 +242,7 @@ const submitForm = async (formEl: FormInstance | undefined) => {
 
         <el-table-column
           label="Amount"
-          width="160"
+          width="180"
           align="right">
           <template #default="scope">
             <span
@@ -300,22 +308,6 @@ const submitForm = async (formEl: FormInstance | undefined) => {
             :controls="false"
             style="width: 100%"
             placeholder="0.00" />
-        </el-form-item>
-
-        <el-form-item
-          label="Employee"
-          prop="userId">
-          <el-select
-            v-model="form.userId"
-            placeholder="Select employee"
-            filterable
-            class="w-full">
-            <el-option
-              v-for="emp in employees"
-              :key="emp.id"
-              :label="emp.name"
-              :value="emp.id" />
-          </el-select>
         </el-form-item>
 
         <el-form-item label="Category">

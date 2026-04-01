@@ -125,7 +125,7 @@ const lineChartData = computed(() => {
         borderWidth: 2.5,
         data: keys.map((k) => map.get(k)!.expense),
         fill: true,
-        label: "Expenses",
+        label: "Expense",
         pointHoverBackgroundColor: "#f43f5e",
         pointHoverRadius: 5,
         pointRadius: 0,
@@ -263,8 +263,13 @@ const formatDate = (ts: any) => {
 };
 
 const getProjectName = (pid: string) => {
-  if (!pid) return "—";
-  return projects.value.find((p) => p.id === pid)?.name || "—";
+  if (!pid || !projects.value) return "—";
+  return projects.value.find((p: any) => p.id === pid)?.name || "—";
+};
+
+const getUserName = (uid: string) => {
+  if (!uid || !employees.value) return "—";
+  return employees.value.find((e: any) => e.id === uid)?.name || "—";
 };
 </script>
 
@@ -318,7 +323,7 @@ const getProjectName = (pid: string) => {
       <!-- Total Income -->
       <div class="stat-card">
         <div class="stat-content">
-          <span class="stat-label">Jami Daromad</span>
+          <span class="stat-label">Total Income</span>
           <h2 class="stat-value">{{ formatAmount(totalIncome) }}</h2>
           <div class="stat-change positive">
             <svg
@@ -334,7 +339,7 @@ const getProjectName = (pid: string) => {
               <polyline points="16 7 22 7 22 13" />
             </svg>
             <span class="change-value">+12.5%</span>
-            <span class="change-period">o'tgan oyga nisbatan</span>
+            <span class="change-period">vs last month</span>
           </div>
         </div>
         <div class="stat-icon blue">
@@ -360,7 +365,7 @@ const getProjectName = (pid: string) => {
       <!-- Total Expenses -->
       <div class="stat-card">
         <div class="stat-content">
-          <span class="stat-label">Jami Xarajat</span>
+          <span class="stat-label">Total Expenses</span>
           <h2 class="stat-value">{{ formatAmount(totalExpense) }}</h2>
           <div class="stat-change negative">
             <svg
@@ -376,7 +381,7 @@ const getProjectName = (pid: string) => {
               <polyline points="16 17 22 17 22 11" />
             </svg>
             <span class="change-value">-8.2%</span>
-            <span class="change-period">o'tgan oyga nisbatan</span>
+            <span class="change-period">vs last month</span>
           </div>
         </div>
         <div class="stat-icon pink">
@@ -397,7 +402,7 @@ const getProjectName = (pid: string) => {
       <!-- Net Profit -->
       <div class="stat-card">
         <div class="stat-content">
-          <span class="stat-label">Sof Foyda</span>
+          <span class="stat-label">Net Profit</span>
           <h2 class="stat-value">{{ formatAmount(netProfit) }}</h2>
           <div class="stat-change positive">
             <svg
@@ -413,7 +418,7 @@ const getProjectName = (pid: string) => {
               <polyline points="16 7 22 7 22 13" />
             </svg>
             <span class="change-value">+18.3%</span>
-            <span class="change-period">o'tgan oyga nisbatan</span>
+            <span class="change-period">vs last month</span>
           </div>
         </div>
         <div class="stat-icon green">
@@ -435,7 +440,7 @@ const getProjectName = (pid: string) => {
       <!-- Monthly Balance -->
       <div class="stat-card">
         <div class="stat-content">
-          <span class="stat-label">Oylik Balans</span>
+          <span class="stat-label">Monthly Balance</span>
           <h2 class="stat-value">{{ formatAmount(monthlyBalance) }}</h2>
           <div class="stat-change positive">
             <svg
@@ -451,7 +456,7 @@ const getProjectName = (pid: string) => {
               <polyline points="16 7 22 7 22 13" />
             </svg>
             <span class="change-value">+5.1%</span>
-            <span class="change-period">o'tgan oyga nisbatan</span>
+            <span class="change-period">vs last month</span>
           </div>
         </div>
         <div class="stat-icon indigo">
@@ -482,7 +487,7 @@ const getProjectName = (pid: string) => {
     <div class="charts-grid">
       <!-- Line Chart: Income vs Expenses -->
       <div class="chart-card chart-card--line">
-        <h3 class="chart-title">Daromad va Xarajatlar</h3>
+        <h3 class="chart-title">Income and Expenses</h3>
         <div
           v-loading="pending"
           class="chart-container">
@@ -496,7 +501,7 @@ const getProjectName = (pid: string) => {
 
       <!-- Doughnut Chart: Expenses by Category -->
       <div class="chart-card chart-card--doughnut">
-        <h3 class="chart-title">Kategoriya bo'yicha Xarajatlar</h3>
+        <h3 class="chart-title">Expenses by Category</h3>
         <div
           v-loading="pending"
           class="chart-container">
@@ -512,11 +517,11 @@ const getProjectName = (pid: string) => {
     <!-- ──── Recent Transactions Table ──── -->
     <div class="table-card">
       <div class="table-header">
-        <h3 class="table-title">So'nggi Tranzaksiyalar</h3>
+        <h3 class="table-title">Latest Transactions</h3>
         <button
           class="view-all-btn"
           @click="router.push('/cabinet/admin/transactions')">
-          Barchasi
+          View All
           <svg
             width="14"
             height="14"
@@ -554,18 +559,18 @@ const getProjectName = (pid: string) => {
           fontSize: '14px',
         }">
         <el-table-column
-          label="Sana"
-          width="140">
+          label="Date"
+          width="160">
           <template #default="scope">
             <span class="cell-date">
-              {{ formatDate(scope.row.createdAt) }}
+              {{ formatDate(scope.row.createdAt) || "—" }}
             </span>
           </template>
         </el-table-column>
 
         <el-table-column
-          label="Izoh"
-          min-width="200">
+          label="Description"
+          min-width="150">
           <template #default="scope">
             <span class="cell-description">
               {{ scope.row.description || "—" }}
@@ -574,8 +579,8 @@ const getProjectName = (pid: string) => {
         </el-table-column>
 
         <el-table-column
-          label="Kategoriya"
-          width="160">
+          label="Category"
+          width="170">
           <template #default="scope">
             <span class="cell-category">
               {{ scope.row.expenseType || "—" }}
@@ -584,16 +589,26 @@ const getProjectName = (pid: string) => {
         </el-table-column>
 
         <el-table-column
-          label="Loyiha"
-          width="160">
+          label="User"
+          width="150">
+          <template #default="scope">
+            <span class="cell-user">
+              {{ getUserName(scope.row.userId) }}
+            </span>
+          </template>
+        </el-table-column>
+
+        <el-table-column
+          label="Project"
+          width="150">
           <template #default="scope">
             {{ getProjectName(scope.row.projectId) }}
           </template>
         </el-table-column>
 
         <el-table-column
-          label="Summa"
-          width="150"
+          label="Amount"
+          width="160"
           align="right">
           <template #default="scope">
             <span
@@ -606,14 +621,14 @@ const getProjectName = (pid: string) => {
         </el-table-column>
 
         <el-table-column
-          label="Turi"
-          width="120"
+          label="Type"
+          width="150"
           align="center">
           <template #default="scope">
             <span
               class="type-badge"
               :class="scope.row.type">
-              {{ scope.row.type === "income" ? "Daromad" : "Xarajat" }}
+              {{ scope.row.type === "income" ? "Income" : "Expense" }}
             </span>
           </template>
         </el-table-column>
@@ -626,7 +641,6 @@ const getProjectName = (pid: string) => {
 /* ──── Dashboard Layout ──── */
 .dashboard {
   min-height: 100vh;
-  padding: 8px 32px 80px;
 }
 
 /* ──── Header ──── */

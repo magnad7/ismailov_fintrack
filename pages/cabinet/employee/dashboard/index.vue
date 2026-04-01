@@ -13,6 +13,7 @@ import {
 } from "chart.js";
 import { collection, query, where } from "firebase/firestore";
 import { Doughnut, Line } from "vue-chartjs";
+import { useRouter } from "vue-router";
 import { useCollection, useCurrentUser, useFirestore } from "vuefire";
 
 import TransactionModal from "~/components/custom/TransactionModal.vue";
@@ -44,7 +45,9 @@ const txQuery = computed(() => {
 });
 const { data: transactions, pending } = useCollection(txQuery);
 const { data: projects } = useCollection(collection(db, "projects"));
+const { data: employees } = useCollection(collection(db, "users"));
 
+const router = useRouter();
 const showTransactionModal = ref(false);
 
 // Stats
@@ -69,9 +72,11 @@ const lineChartData = computed(() => {
     const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
     if (!map.has(key)) map.set(key, { expense: 0, income: 0 });
     const e = map.get(key)!;
-    t.type === "income"
-      ? (e.income += t.amount || 0)
-      : (e.expense += t.amount || 0);
+    if (t.type === "income") {
+      e.income += t.amount || 0;
+    } else {
+      e.expense += t.amount || 0;
+    }
   });
   const keys = [...map.keys()].sort().slice(-6);
   const mNames = [
@@ -97,7 +102,7 @@ const lineChartData = computed(() => {
         borderWidth: 2.5,
         data: keys.map((k) => map.get(k)!.income),
         fill: true,
-        label: "Daromad",
+        label: "Income",
         pointHoverRadius: 5,
         pointRadius: 0,
         tension: 0.4,
@@ -108,7 +113,7 @@ const lineChartData = computed(() => {
         borderWidth: 2.5,
         data: keys.map((k) => map.get(k)!.expense),
         fill: true,
-        label: "Xarajat",
+        label: "Expense",
         pointHoverRadius: 5,
         pointRadius: 0,
         tension: 0.4,
@@ -169,7 +174,7 @@ const doughnutData = computed(() => {
   transactions.value
     .filter((t: any) => t.type === "expense")
     .forEach((t: any) => {
-      const c = t.expenseType || "Boshqa";
+      const c = t.expenseType || "Other";
       catMap.set(c, (catMap.get(c) || 0) + (t.amount || 0));
     });
   const labels = [...catMap.keys()];
@@ -193,7 +198,7 @@ const doughnutData = computed(() => {
         hoverOffset: 8,
       },
     ],
-    labels: labels.length ? labels : ["Ma'lumot yo'q"],
+    labels: labels.length ? labels : ["No Data"],
   };
 });
 
@@ -243,6 +248,11 @@ const getProjectName = (pid: string) => {
   if (!pid) return "—";
   return projects.value.find((p) => p.id === pid)?.name || "—";
 };
+
+const getUserName = (uid: string) => {
+  if (!uid || !employees.value) return "—";
+  return employees.value.find((e: any) => e.id === uid)?.name || "—";
+};
 </script>
 
 <template>
@@ -286,7 +296,7 @@ const getProjectName = (pid: string) => {
               rx="1" />
           </svg>
         </span>
-        <h1 class="header-title">Mening Ko'rsatkichlarim</h1>
+        <h1 class="header-title">My Metrics</h1>
       </div>
       <button
         class="add-tx-btn"
@@ -303,7 +313,7 @@ const getProjectName = (pid: string) => {
           <path d="M5 12h14" />
           <path d="M12 5v14" />
         </svg>
-        Tranzaksiya qo'shish
+        Add Transaction
       </button>
     </div>
 
@@ -311,7 +321,7 @@ const getProjectName = (pid: string) => {
     <div class="stats-grid">
       <div class="stat-card">
         <div class="stat-content">
-          <span class="stat-label">Shaxsiy Balans</span>
+          <span class="stat-label">Personal Balance</span>
           <h2 class="stat-value">{{ formatAmount(balance) }}</h2>
           <div
             class="stat-change"
@@ -328,7 +338,7 @@ const getProjectName = (pid: string) => {
               <polyline points="22 7 13.5 15.5 8.5 10.5 2 17" />
               <polyline points="16 7 22 7 22 13" />
             </svg>
-            <span class="change-value">Umumiy</span>
+            <span class="change-value">Total</span>
           </div>
         </div>
         <div class="stat-icon blue">
@@ -352,7 +362,7 @@ const getProjectName = (pid: string) => {
       </div>
       <div class="stat-card">
         <div class="stat-content">
-          <span class="stat-label">Jami Daromad</span>
+          <span class="stat-label">Total Income</span>
           <h2 class="stat-value">{{ formatAmount(totalIncome) }}</h2>
           <div class="stat-change positive">
             <svg
@@ -368,7 +378,7 @@ const getProjectName = (pid: string) => {
               <polyline points="16 7 22 7 22 13" />
             </svg>
             <span class="change-value">+12.5%</span>
-            <span class="change-period">o'tgan oyga nisbatan</span>
+            <span class="change-period">vs last month</span>
           </div>
         </div>
         <div class="stat-icon green">
@@ -386,7 +396,7 @@ const getProjectName = (pid: string) => {
       </div>
       <div class="stat-card">
         <div class="stat-content">
-          <span class="stat-label">Jami Xarajat</span>
+          <span class="stat-label">Total Expense</span>
           <h2 class="stat-value">{{ formatAmount(totalExpense) }}</h2>
           <div class="stat-change negative">
             <svg
@@ -402,7 +412,7 @@ const getProjectName = (pid: string) => {
               <polyline points="16 17 22 17 22 11" />
             </svg>
             <span class="change-value">-8.2%</span>
-            <span class="change-period">o'tgan oyga nisbatan</span>
+            <span class="change-period">vs last month</span>
           </div>
         </div>
         <div class="stat-icon pink">
@@ -422,7 +432,7 @@ const getProjectName = (pid: string) => {
     <!-- Charts -->
     <div class="charts-grid">
       <div class="chart-card">
-        <h3 class="chart-title">Daromad va Xarajatlar</h3>
+        <h3 class="chart-title">Income and Expenses</h3>
         <div
           v-loading="pending"
           class="chart-container">
@@ -434,7 +444,7 @@ const getProjectName = (pid: string) => {
         </div>
       </div>
       <div class="chart-card">
-        <h3 class="chart-title">Kategoriya bo'yicha Xarajatlar</h3>
+        <h3 class="chart-title">Expenses by Category</h3>
         <div
           v-loading="pending"
           class="chart-container">
@@ -450,7 +460,23 @@ const getProjectName = (pid: string) => {
     <!-- Table -->
     <div class="table-card">
       <div class="table-header">
-        <h3 class="table-title">So'nggi Tranzaksiyalar</h3>
+        <h3 class="table-title">Latest Transactions</h3>
+        <button
+          class="view-all-btn"
+          @click="router.push('/cabinet/employee/transactions')">
+          View All
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6" />
+          </svg>
+        </button>
       </div>
       <el-table
         v-loading="pending"
@@ -475,36 +501,45 @@ const getProjectName = (pid: string) => {
           fontSize: '14px',
         }">
         <el-table-column
-          label="Sana"
-          width="140">
+          label="Date"
+          width="150">
           <template #default="scope">
-            <span class="cell-date">{{ fmtDate(scope.row.createdAt) }}</span>
+            <span class="cell-date">
+              {{ formateDate(fmtDate(scope.row.createdAt)) }}
+            </span>
           </template>
         </el-table-column>
         <el-table-column
-          label="Izoh"
+          label="Description"
           min-width="200">
           <template #default="scope">
             <span class="cell-desc">{{ scope.row.description || "—" }}</span>
           </template>
         </el-table-column>
         <el-table-column
-          label="Kategoriya"
-          width="160">
+          label="Category"
+          width="180">
           <template #default="scope">
             <span class="cell-cat">{{ scope.row.expenseType || "—" }}</span>
           </template>
         </el-table-column>
         <el-table-column
-          label="Loyiha"
+          label="User"
+          width="150">
+          <template #default="scope">
+            <span class="cell-user">{{ getUserName(scope.row.userId) }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="Project"
           width="160">
           <template #default="scope">
             {{ getProjectName(scope.row.projectId) }}
           </template>
         </el-table-column>
         <el-table-column
-          label="Summa"
-          width="150"
+          label="Amount"
+          width="180"
           align="right">
           <template #default="scope">
             <span
@@ -516,14 +551,14 @@ const getProjectName = (pid: string) => {
           </template>
         </el-table-column>
         <el-table-column
-          label="Turi"
-          width="120"
+          label="Type"
+          width="150"
           align="center">
           <template #default="scope">
             <span
               class="type-badge"
               :class="scope.row.type">
-              {{ scope.row.type === "income" ? "Daromad" : "Xarajat" }}
+              {{ scope.row.type === "income" ? "Income" : "Expense" }}
             </span>
           </template>
         </el-table-column>
@@ -740,6 +775,27 @@ const getProjectName = (pid: string) => {
   font-size: 16px;
   font-weight: 700;
   color: #111827;
+}
+
+.view-all-btn {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  padding: 7px 16px;
+  font-family: Montserrat, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: #6366f1;
+  cursor: pointer;
+  background: #eef2ff;
+  border: none;
+  border-radius: 10px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    color: #4f46e5;
+    background: #e0e7ff;
+  }
 }
 
 .dashboard-table {

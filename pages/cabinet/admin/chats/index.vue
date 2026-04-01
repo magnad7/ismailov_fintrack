@@ -157,7 +157,7 @@ const sendMessage = async () => {
 
     scrollToBottom();
   } catch (err) {
-    console.error("Xabar yuborishda xatolik:", err);
+    console.error("Error sending message:", err);
   }
 };
 
@@ -185,7 +185,7 @@ const formatLastTime = (ts: any) => {
     return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   const y = new Date(now);
   y.setDate(y.getDate() - 1);
-  if (d.toDateString() === y.toDateString()) return "Kecha";
+  if (d.toDateString() === y.toDateString()) return "Yesterday";
   return `${d.getDate()}.${String(d.getMonth() + 1).padStart(2, "0")}`;
 };
 
@@ -193,11 +193,11 @@ const getDateLabel = (ts: any) => {
   if (!ts) return "";
   const d = ts.toDate ? ts.toDate() : new Date(ts);
   const now = new Date();
-  if (d.toDateString() === now.toDateString()) return "Bugun";
+  if (d.toDateString() === now.toDateString()) return "Today";
   const y = new Date(now);
   y.setDate(y.getDate() - 1);
-  if (d.toDateString() === y.toDateString()) return "Kecha";
-  return d.toLocaleDateString("uz-UZ", {
+  if (d.toDateString() === y.toDateString()) return "Yesterday";
+  return d.toLocaleDateString("en-US", {
     day: "numeric",
     month: "long",
   });
@@ -236,7 +236,7 @@ onUnmounted(() => {
             <path
               d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
           </svg>
-          Xabarlar
+          Messages
         </h2>
       </div>
 
@@ -258,7 +258,7 @@ onUnmounted(() => {
         <input
           v-model="search"
           class="sidebar__search-input"
-          placeholder="Qidirish..." />
+          placeholder="Search..." />
       </div>
 
       <div class="sidebar__list">
@@ -281,7 +281,7 @@ onUnmounted(() => {
               </span>
             </div>
             <p class="contact__msg">
-              {{ emp.lastMessage || "Xabar yo'q" }}
+              {{ emp.lastMessage || "No messages yet" }}
             </p>
           </div>
         </div>
@@ -302,7 +302,7 @@ onUnmounted(() => {
               r="8" />
             <path d="m21 21-4.35-4.35" />
           </svg>
-          <span>Xodim topilmadi</span>
+          <span>No employees found</span>
         </div>
       </div>
     </aside>
@@ -325,8 +325,8 @@ onUnmounted(() => {
               d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
           </svg>
         </div>
-        <h3>Suhbatni tanlang</h3>
-        <p>Chap paneldan xodimni tanlab suhbatni boshlang</p>
+        <h3>Select a conversation</h3>
+        <p>Choose an employee from the sidebar to start chatting</p>
       </div>
 
       <!-- Active Chat -->
@@ -372,7 +372,7 @@ onUnmounted(() => {
           <div
             v-if="!loadingMessages && messages.length === 0"
             class="chat-messages__empty">
-            <p>Hali xabar yo'q. Birinchi xabarni yuboring!</p>
+            <p>No messages yet. Send the first message!</p>
           </div>
         </div>
 
@@ -381,7 +381,7 @@ onUnmounted(() => {
           <input
             v-model="messageInput"
             class="chat-footer__input"
-            placeholder="Xabar yozing..."
+            placeholder="Type a message..."
             @keyup.enter="sendMessage" />
           <button
             class="chat-footer__send"
@@ -413,7 +413,7 @@ onUnmounted(() => {
   height: calc(100vh - 60px);
   overflow: hidden;
   background: #fff;
-  border: 1px solid #e8e8ed;
+  border: 1px solid #f3f4f6;
   border-radius: 18px;
 }
 
@@ -423,8 +423,8 @@ onUnmounted(() => {
   flex-shrink: 0;
   flex-direction: column;
   width: 340px;
-  background: #fafafe;
-  border-right: 1px solid #f0f0f3;
+  background: #f9fafb;
+  border-right: 1px solid #f3f4f6;
 
   &__head {
     padding: 24px 24px 0;
@@ -437,7 +437,7 @@ onUnmounted(() => {
     margin: 0;
     font-size: 20px;
     font-weight: 700;
-    color: #1a1a2e;
+    color: #111827;
   }
 
   &__search {
@@ -446,12 +446,12 @@ onUnmounted(() => {
     align-items: center;
     padding: 10px 16px;
     margin: 18px 16px 10px;
-    background: #f0f0f5;
+    background: #f3f4f6;
     border-radius: 12px;
     transition: background 0.2s;
 
     &:focus-within {
-      background: #e8e8f0;
+      background: #eef2ff;
     }
   }
 
@@ -513,11 +513,11 @@ onUnmounted(() => {
     transform 0.1s;
 
   &:hover {
-    background: #ededf3;
+    background: #f3f4f6;
   }
 
   &--active {
-    background: #e8e8f5;
+    background: #eef2ff;
 
     .contact__name {
       color: #4f46e5;
@@ -555,7 +555,7 @@ onUnmounted(() => {
     text-overflow: ellipsis;
     font-size: 14px;
     font-weight: 600;
-    color: #1a1a2e;
+    color: #111827;
     white-space: nowrap;
   }
 
@@ -600,7 +600,7 @@ onUnmounted(() => {
     width: 80px;
     height: 80px;
     margin-bottom: 8px;
-    background: #f5f5fa;
+    background: #f9fafb;
     border-radius: 50%;
   }
 
@@ -624,7 +624,7 @@ onUnmounted(() => {
   gap: 14px;
   align-items: center;
   padding: 16px 24px;
-  border-bottom: 1px solid #f0f0f3;
+  border-bottom: 1px solid #f3f4f6;
 
   &__avatar {
     display: flex;
@@ -643,7 +643,7 @@ onUnmounted(() => {
     margin: 0;
     font-size: 15px;
     font-weight: 700;
-    color: #1a1a2e;
+    color: #111827;
   }
 
   &__sub {
@@ -660,7 +660,7 @@ onUnmounted(() => {
   gap: 4px;
   padding: 20px 24px;
   overflow-y: auto;
-  background: #f5f5fa;
+  background: #f9fafb;
 
   &::-webkit-scrollbar {
     width: 4px;
@@ -691,7 +691,7 @@ onUnmounted(() => {
     font-size: 11.5px;
     font-weight: 500;
     color: #888;
-    background: #e8e8f0;
+    background: #eef2ff;
     border-radius: 10px;
   }
 }
@@ -722,10 +722,10 @@ onUnmounted(() => {
     justify-content: flex-start;
 
     .msg__bubble {
-      color: #1a1a2e;
+      color: #111827;
       background: #fff;
       border-bottom-left-radius: 6px;
-      box-shadow: 0 1px 4px rgb(0 0 0 / 6%);
+      box-shadow: 0 1px 4px rgb(0 0 0 / 5%);
     }
 
     .msg__time {
@@ -738,14 +738,14 @@ onUnmounted(() => {
     max-width: 65%;
     padding: 10px 14px 6px;
     border-radius: 18px;
-    animation: msgIn 0.2s ease;
+    animation: msg-in 0.2s ease;
   }
 
   &__text {
     margin: 0;
     font-size: 14px;
     line-height: 1.5;
-    word-break: break-word;
+    overflow-wrap: break-word;
     white-space: pre-wrap;
   }
 
@@ -757,7 +757,7 @@ onUnmounted(() => {
   }
 }
 
-@keyframes msgIn {
+@keyframes msg-in {
   from {
     opacity: 0;
     transform: translateY(6px);
@@ -777,7 +777,7 @@ onUnmounted(() => {
   align-items: center;
   padding: 14px 20px;
   background: #fff;
-  border-top: 1px solid #f0f0f3;
+  border-top: 1px solid #f3f4f6;
 
   &__input {
     flex: 1;
@@ -787,13 +787,13 @@ onUnmounted(() => {
     font-size: 14px;
     color: #333;
     outline: none;
-    background: #f5f5fa;
+    background: #f3f4f6;
     border: none;
     border-radius: 22px;
     transition: background 0.2s;
 
     &:focus {
-      background: #ededf3;
+      background: #eef2ff;
     }
 
     &::placeholder {

@@ -11,96 +11,90 @@ export const useVariebleStore = defineStore("variebleStore", () => {
   const list = ref<Record<Role, MenuItem[]>>({
     admin: [
       {
-        icon: "HomeFilled",
-        // Assuming 'index' should map to 'path' and 'id'/'name' are not strictly required or can be derived/omitted for these new items
-        // For a faithful change, I'm keeping the structure as provided in the edit, which uses 'index' instead of 'path'
-        // and omits 'id' and 'name'. This might cause type mismatches with MenuItem interface.
-        // To make it syntactically correct and match the provided edit, I'm using 'index' and omitting 'id'/'name'.
-        // If 'id' and 'name' are mandatory, they would need to be added here.
-        // For now, I'll assume the user intends to change the structure or that the type `MenuItem` is flexible enough.
-        // To strictly adhere to `MenuItem`, `index` would need to be `path`, and `id`/`name` would need to be added.
-        // Given the instruction "make the change faithfully and without making any unrelated edits",
-        // I will use the provided structure with `index` and without `id`/`name`.
-        // This will likely cause a type error if MenuItem is strictly enforced.
-        // To avoid a type error, MenuItem would need to be updated or the type of `list` would need to be more generic.
-        // Since the instruction is to make the change and return the file, I will apply the change as provided.
-        // I'm adding placeholder `id` and `name` to satisfy the `MenuItem` interface, as the instruction is to keep it syntactically correct.
+        icon: "menu-dashboard",
         id: 1, // Placeholder
         name: "dashboard", // Placeholder
         path: "/cabinet/admin/dashboard",
-        title: "Dashbord",
+        title: "Dashboard",
       },
       {
-        icon: "List",
+        icon: "menu-transactions",
         id: 2, // Placeholder
         name: "transactions", // Placeholder
         path: "/cabinet/admin/transactions",
-        title: "Barcha Tranzaksiyalar",
+        title: "Transactions",
       },
       {
-        icon: "Management",
+        icon: "menu-projects",
         id: 3, // Placeholder
         name: "projects", // Placeholder
         path: "/cabinet/admin/projects",
-        title: "Loyihalar",
+        title: "Projects",
       },
       {
-        icon: "UserFilled",
+        icon: "menu-employees",
         id: 4, // Placeholder
         name: "employees", // Placeholder
         path: "/cabinet/admin/employees",
-        title: "Xodimlar",
+        title: "Employees",
       },
       {
-        icon: "Money",
+        icon: "menu-expenses",
         id: 5, // Placeholder
         name: "expense-types", // Placeholder
         path: "/cabinet/admin/expense-types",
-        title: "Xarajat Turlari",
+        title: "Expense Types",
       },
       {
-        icon: "ChatDotSquare",
+        icon: "menu-chats",
         id: 6, // Placeholder
         name: "chats", // Placeholder
         path: "/cabinet/admin/chats",
-        title: "Chatlar",
+        title: "Chats",
       },
       {
-        icon: "Calendar",
+        icon: "menu-calendar",
         id: 7, // Placeholder
         name: "calendar", // Placeholder
         path: "/cabinet/admin/calendar",
-        title: "Kalendar",
+        title: "Calendar",
       },
     ],
     employee: [
       {
-        icon: "HomeFilled",
+        icon: "menu-dashboard",
         id: 1, // Placeholder
         name: "dashboard", // Placeholder
         path: "/cabinet/employee/dashboard",
-        title: "Asosiy oyna",
+        title: "Dashboard",
       },
       {
-        icon: "Management",
+        icon: "menu-transactions",
         id: 2, // Placeholder
+        name: "transactions", // Placeholder
+        path: "/cabinet/employee/transactions",
+        title: "Transactions",
+      },
+      {
+        icon: "menu-projects",
+        id: 3, // Placeholder
         name: "projects", // Placeholder
         path: "/cabinet/employee/projects",
-        title: "Loyihalar",
+        title: "Projects",
       },
       {
-        icon: "ChatDotSquare",
+        icon: "menu-chats",
         id: 3, // Placeholder
         name: "chats", // Placeholder
         path: "/cabinet/employee/chats",
-        title: "Chatlar",
+        title: "Chats",
       },
       {
-        icon: "Calendar",
+        icon: "menu-calendar",
         id: 4, // Placeholder
         name: "calendar", // Placeholder
         path: "/cabinet/employee/calendar",
-        title: "Kalendar",
+        title: "Calendar",
       },
     ],
   });
@@ -108,8 +102,8 @@ export const useVariebleStore = defineStore("variebleStore", () => {
   const priority = ["default", "low", "medium", "high"] as const;
 
   const roles: Record<Role, string> = {
-    admin: "Технический администратор",
-    employee: "Сотрудник",
+    admin: "Administrator",
+    employee: "Employee",
   };
   const unit_types = ["M", "M²", "M³", "ШТ", "ЧЕЛ", "Т", "ММ"] as const;
   return {

@@ -38,24 +38,31 @@ const form = reactive({
 });
 
 const rules = reactive<FormRules>({
-  amount: [{ message: "Majburiy maydon", required: true, trigger: "blur" }],
-  date: [{ message: "Majburiy maydon", required: true, trigger: "change" }],
+  amount: [{ message: "Required field", required: true, trigger: "blur" }],
+  date: [{ message: "Required field", required: true, trigger: "change" }],
   expenseType: [
-    { message: "Majburiy maydon", required: true, trigger: "change" },
+    { message: "Required field", required: true, trigger: "change" },
   ],
-  projectId: [
-    { message: "Majburiy maydon", required: true, trigger: "change" },
-  ],
-  type: [{ message: "Majburiy maydon", required: true, trigger: "change" }],
+  projectId: [{ message: "Required field", required: true, trigger: "change" }],
+  type: [{ message: "Required field", required: true, trigger: "change" }],
 });
 
-// Watch visibility to reset form
+// Watch visibility to reset form fully
 watch(
   () => isVisible.value,
   (newVal) => {
     if (newVal) {
-      if (formRef.value) formRef.value.resetFields();
-      form.date = new Date();
+      Object.assign(form, {
+        amount: null,
+        date: new Date(),
+        description: "",
+        expenseType: "",
+        projectId: "",
+        type: "expense",
+      });
+      nextTick(() => {
+        if (formRef.value) formRef.value.clearValidate();
+      });
     }
   }
 );
@@ -68,6 +75,8 @@ const onSave = async () => {
       try {
         await addDoc(collection(db, "transactions"), {
           amount: Number(form.amount),
+          authorId: authStore.myId,
+          authorRole: "employee",
           createdAt: form.date, // User selected date
           description: form.description,
           expenseType: form.expenseType,
@@ -77,13 +86,11 @@ const onSave = async () => {
           userId: authStore.myId,
         });
 
-        ElMessage.success("Tranzaksiya muvaffaqiyatli saqlandi!");
+        ElMessage.success("Transaction saved successfully!");
         isVisible.value = false;
         emit("saved");
       } catch (err: any) {
-        ElMessage.error(
-          err.message || "Tranzaksiyani saqlashda xatolik yuz berdi"
-        );
+        ElMessage.error(err.message || "Error saving transaction");
       } finally {
         loading.value = false;
       }
@@ -95,59 +102,50 @@ const onSave = async () => {
 <template>
   <el-dialog
     v-model="isVisible"
-    title="Tranzaksiya qo'shish"
-    width="500px"
-    class="transaction-modal"
+    title="New Transaction"
+    width="440px"
+    class="premium-modal"
     destroy-on-close>
     <el-form
       ref="formRef"
       :model="form"
       :rules="rules"
-      label-position="top"
-      class="mt-4">
-      <el-form-item
-        label="Tranzaksiya turi"
-        prop="type">
+      label-position="top">
+      <el-form-item prop="type">
         <el-radio-group
           v-model="form.type"
-          class="w-full">
-          <el-radio-button label="income">Daromad (+)</el-radio-button>
-          <el-radio-button label="expense">Xarajat (-)</el-radio-button>
+          class="segmented-control w-full">
+          <el-radio-button
+            label="income"
+            value="income">
+            Income
+          </el-radio-button>
+          <el-radio-button
+            label="expense"
+            value="expense">
+            Expense
+          </el-radio-button>
         </el-radio-group>
       </el-form-item>
 
-      <div class="flex gap-4">
-        <el-form-item
-          label="Summa"
-          prop="amount"
-          class="w-1/2">
-          <el-input-number
-            v-model="form.amount"
-            :min="0"
-            :controls="false"
-            class="w-full"
-            placeholder="0.00" />
-        </el-form-item>
-
-        <el-form-item
-          label="Sana"
-          prop="date"
-          class="w-1/2">
-          <el-date-picker
-            v-model="form.date"
-            type="date"
-            placeholder="Sanani tanlang"
-            class="w-full"
-            format="DD.MM.YYYY" />
-        </el-form-item>
-      </div>
+      <el-form-item
+        label="Amount"
+        prop="amount">
+        <el-input-number
+          v-model="form.amount"
+          :min="0"
+          :controls="false"
+          class="w-full"
+          placeholder="0.00" />
+      </el-form-item>
 
       <el-form-item
-        label="Kategoriya"
+        label="Category"
         prop="expenseType">
         <el-select
           v-model="form.expenseType"
-          placeholder="Kategoriyani tanlang"
+          placeholder="Select category"
+          filterable
           class="w-full">
           <el-option
             v-for="item in expenseTypes"
@@ -158,11 +156,13 @@ const onSave = async () => {
       </el-form-item>
 
       <el-form-item
-        label="Loyiha"
+        label="Project"
         prop="projectId">
         <el-select
           v-model="form.projectId"
-          placeholder="Loyihani tanlang"
+          placeholder="Select project"
+          filterable
+          clearable
           class="w-full">
           <el-option
             v-for="item in projects"
@@ -173,43 +173,34 @@ const onSave = async () => {
       </el-form-item>
 
       <el-form-item
-        label="Izoh"
+        label="Date"
+        prop="date">
+        <el-date-picker
+          v-model="form.date"
+          type="date"
+          placeholder="Pick a date"
+          class="w-full"
+          format="DD.MM.YYYY" />
+      </el-form-item>
+
+      <el-form-item
+        label="Description"
         prop="description">
         <el-input
           v-model="form.description"
           type="textarea"
           :rows="3"
-          placeholder="Qo'shimcha izoh..." />
+          placeholder="Transaction description..." />
       </el-form-item>
-    </el-form>
 
-    <template #footer>
-      <div class="dialog-footer flex justify-end gap-2">
-        <el-button @click="isVisible = false">Bekor qilish</el-button>
-        <el-button
-          type="primary"
-          :loading="loading"
-          @click="onSave">
-          Saqlash
-        </el-button>
-      </div>
-    </template>
+      <button
+        type="button"
+        class="premium-btn mt-2"
+        :class="{ 'is-loading': loading }"
+        @click.prevent="onSave">
+        <span v-if="loading">Saving...</span>
+        <span v-else>Save Transaction</span>
+      </button>
+    </el-form>
   </el-dialog>
 </template>
-
-<style lang="scss" scoped>
-.transaction-modal {
-  /* You can add specific styles here if needed to override Element Plus defaults */
-  .el-radio-group {
-    display: flex;
-
-    .el-radio-button {
-      flex: 1;
-
-      :deep(.el-radio-button__inner) {
-        width: 100%;
-      }
-    }
-  }
-}
-</style>

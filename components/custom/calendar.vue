@@ -69,25 +69,25 @@ const eventForm = ref<{
 });
 
 const eventColors = ref([
-  { name: "Синий", value: "#1a73e8" },
-  { name: "Красный", value: "#d50000" },
-  { name: "Зеленый", value: "#0b8043" },
-  { name: "Фиолетовый", value: "#8e24aa" },
-  { name: "Оранжевый", value: "#e67c73" },
-  { name: "Бирюзовый", value: "#009688" },
-  { name: "Серый", value: "#616161" },
-  { name: "Розовый", value: "#d81b60" },
+  { name: "Blue", value: "#1a73e8" },
+  { name: "Red", value: "#d50000" },
+  { name: "Green", value: "#0b8043" },
+  { name: "Purple", value: "#8e24aa" },
+  { name: "Orange", value: "#e67c73" },
+  { name: "Teal", value: "#009688" },
+  { name: "Gray", value: "#616161" },
+  { name: "Pink", value: "#d81b60" },
 ]);
 
 const viewModes = ref([
-  { label: "День", value: "day" },
-  { label: "Неделя", value: "week" },
-  { label: "Месяц", value: "month" },
-  { label: "Год", value: "year" },
+  { label: "Day", value: "day" },
+  { label: "Week", value: "week" },
+  { label: "Month", value: "month" },
+  { label: "Year", value: "year" },
 ]);
 
-const weekDays = ref(["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"]);
-const weekDaysMin = ref(["П", "В", "С", "Ч", "П", "С", "В"]);
+const weekDays = ref(["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]);
+const weekDaysMin = ref(["M", "T", "W", "T", "F", "S", "S"]);
 
 const currentTimePosition = ref("0px");
 let timeInterval: any = null;
@@ -125,7 +125,7 @@ const updateCurrentTimePosition = () => {
 
 const formattedCurrentDate = computed(() => {
   const year = currentDate.value.getFullYear();
-  const month = currentDate.value.toLocaleDateString("ru-RU", {
+  const month = currentDate.value.toLocaleDateString("en-US", {
     month: "long",
   });
 
@@ -137,7 +137,7 @@ const formattedCurrentDate = computed(() => {
     const weekEnd = new Date(weekStart);
     weekEnd.setDate(weekStart.getDate() + 6);
     if (weekStart.getMonth() === weekEnd.getMonth()) return `${month} ${year}`;
-    const endMonth = weekEnd.toLocaleDateString("ru-RU", { month: "long" });
+    const endMonth = weekEnd.toLocaleDateString("en-US", { month: "long" });
     return `${month} – ${endMonth} ${year}`;
   }
   if (viewMode.value === "year") return `${year}`;
@@ -145,7 +145,7 @@ const formattedCurrentDate = computed(() => {
 });
 
 const currentDayName = computed(() =>
-  currentDate.value.toLocaleDateString("ru-RU", { weekday: "long" })
+  currentDate.value.toLocaleDateString("en-US", { weekday: "long" })
 );
 const currentDayNumber = computed(() => currentDate.value.getDate());
 const isCurrentDayToday = computed(() => {
@@ -160,7 +160,7 @@ const currentWeekDays = computed(() => {
     d.setDate(weekStart.getDate() + i);
     return {
       date: formatDateString(d),
-      dayName: d.toLocaleDateString("ru-RU", { weekday: "short" }),
+      dayName: d.toLocaleDateString("en-US", { weekday: "short" }),
       dayNumber: d.getDate(),
       isToday: d.toDateString() === today.toDateString(),
     };
@@ -181,7 +181,7 @@ const formatDateString = (date: Date) => {
 const formatHour = (hour: number) => `${hour.toString().padStart(2, "0")}:00`;
 
 const getMonthName = (idx: number) =>
-  new Date(2024, idx, 1).toLocaleDateString("ru-RU", { month: "long" });
+  new Date(2024, idx, 1).toLocaleDateString("en-US", { month: "long" });
 
 const getWeekStart = (date: Date) => {
   const d = new Date(date);
@@ -622,7 +622,7 @@ const handleDeleteEvent = async () => {
     <div
       v-if="isLoading"
       class="calendar-loading">
-      <span>Yuklanmoqda...</span>
+      <span>Loading...</span>
     </div>
 
     <!-- ── Header ── -->

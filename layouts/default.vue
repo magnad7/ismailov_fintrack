@@ -1,21 +1,6 @@
 <script setup>
 const cookieStore = useCookiesStore();
-const switchLocalePath = useSwitchLocalePath();
 const notificationStore = useNotificationStore();
-const allLangs = reactive([
-  {
-    code: "uz",
-    name: "Uzbek",
-  },
-  {
-    code: "ru",
-    name: "Русский",
-  },
-  {
-    code: "en",
-    name: "English",
-  },
-]);
 
 onMounted(async () => {
   await notificationStore.getList();
@@ -45,7 +30,7 @@ onUnmounted(() => {
           <el-main
             :class="cookieStore.isOpenMenu ? 'mini-main' : ''"
             style="position: relative">
-            <div
+            <!-- <div
               style="
                 position: absolute;
                 top: 20px;
@@ -93,7 +78,7 @@ onUnmounted(() => {
                     class="mr-0" />
                 </el-button>
               </el-badge>
-            </div>
+            </div> -->
             <NuxtPage />
           </el-main>
         </el-scrollbar>
