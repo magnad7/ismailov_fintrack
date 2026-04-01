@@ -16,19 +16,19 @@ const ruleForm = reactive({
 const rules = reactive<FormRules>({
   email: [
     {
-      message: "Поле обязательно к заполнению",
+      message: "Required field",
       required: true,
       trigger: "blur",
     },
     {
-      message: "Введите правильный email адрес",
+      message: "Enter a valid email address",
       trigger: "blur",
       type: "email",
     },
   ],
   password: [
     {
-      message: "Поле обязательно к заполнению",
+      message: "Required field",
       required: true,
       trigger: "blur",
     },
@@ -78,7 +78,7 @@ const submitForm = async (formEl: any) => {
         </svg>
       </div>
       <h1>FinTrack CRM</h1>
-      <p>Управление доходами и расходами</p>
+      <p>Income and Expense Management</p>
 
       <div class="auth-body-form">
         <el-form
@@ -99,7 +99,7 @@ const submitForm = async (formEl: any) => {
               v-model="ruleForm.password"
               type="password"
               show-password
-              placeholder="Пароль" />
+              placeholder="Password" />
           </el-form-item>
 
           <el-form-item class="mb-0">
@@ -111,7 +111,7 @@ const submitForm = async (formEl: any) => {
               <Svg
                 v-if="!loading"
                 name="log-in" />
-              <span>Войти</span>
+              <span>Sign In</span>
             </button>
           </el-form-item>
         </el-form>
