@@ -143,6 +143,11 @@ const updateCredentials = async () => {
     savingSecurity.value = false;
   }
 };
+
+// Under Development mock
+const showUnderDev = () => {
+  ElMessage.info("Feature is under development");
+};
 </script>
 
 <template>
@@ -322,6 +327,61 @@ const updateCredentials = async () => {
               {{ userData?.role === "admin" ? "Administrator" : "Employee" }}
             </p>
           </div>
+        </div>
+
+        <!-- App Preferences (Theme & Lang) -->
+        <div
+          v-if="!isEditing"
+          class="preferences-row">
+          <button
+            class="pref-btn"
+            title="Change Theme"
+            @click="showUnderDev">
+            <span class="pref-icon">
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round">
+                <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+              </svg>
+            </span>
+            <span class="pref-label">Theme</span>
+          </button>
+
+          <button
+            class="pref-btn"
+            title="Change Language"
+            @click="showUnderDev">
+            <span class="pref-icon">
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round">
+                <circle
+                  cx="12"
+                  cy="12"
+                  r="10" />
+                <line
+                  x1="2"
+                  y1="12"
+                  x2="22"
+                  y2="12" />
+                <path
+                  d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+              </svg>
+            </span>
+            <span class="pref-label">Language</span>
+          </button>
         </div>
 
         <!-- Action Buttons (edit mode) -->
@@ -648,6 +708,56 @@ const updateCredentials = async () => {
 
   &--readonly {
     color: #6b7280;
+  }
+}
+
+/* ──── Preferences ──── */
+.preferences-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding-top: 24px;
+  margin-top: 28px;
+  border-top: 1px dashed #e5e7eb;
+}
+
+.pref-btn {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 10px 18px 10px 10px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: #4b5563;
+  cursor: pointer;
+  background: #f9fafb;
+  border: 1px solid #f3f4f6;
+  border-radius: 12px;
+  transition: all 0.2s ease;
+
+  .pref-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    color: #6366f1;
+    background: #eef2ff;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+  }
+
+  &:hover {
+    background: #fff;
+    border-color: #e0e7ff;
+    box-shadow: 0 4px 12px rgb(99 102 241 / 6%);
+
+    .pref-icon {
+      color: #fff;
+      background: #6366f1;
+      transform: scale(1.05);
+    }
   }
 }
 

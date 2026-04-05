@@ -80,6 +80,12 @@ const submitForm = async (formEl: any) => {
       <h1>FinTrack CRM</h1>
       <p>Income and Expense Management</p>
 
+      <div class="auth-body-badge">
+        <span class="badge-text">
+          B2203829 Anvarov Ismoil Individual Project
+        </span>
+      </div>
+
       <div class="auth-body-form">
         <el-form
           ref="ruleFormRef"

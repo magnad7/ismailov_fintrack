@@ -75,23 +75,23 @@ export const useVariebleStore = defineStore("variebleStore", () => {
         path: "/cabinet/employee/transactions",
         title: "Transactions",
       },
-      {
-        icon: "menu-projects",
-        id: 3, // Placeholder
-        name: "projects", // Placeholder
-        path: "/cabinet/employee/projects",
-        title: "Projects",
-      },
+      // {
+      //   icon: "menu-projects",
+      //   id: 3, // Placeholder
+      //   name: "projects", // Placeholder
+      //   path: "/cabinet/employee/projects",
+      //   title: "Projects",
+      // },
       {
         icon: "menu-chats",
-        id: 3, // Placeholder
+        id: 4, // Placeholder
         name: "chats", // Placeholder
         path: "/cabinet/employee/chats",
         title: "Chats",
       },
       {
         icon: "menu-calendar",
-        id: 4, // Placeholder
+        id: 5, // Placeholder
         name: "calendar", // Placeholder
         path: "/cabinet/employee/calendar",
         title: "Calendar",
